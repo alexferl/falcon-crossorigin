@@ -1,3 +1,4 @@
+import falcon
 from falcon_crossorigin import (
     CrossOrigin,
     DEFAULT_METHODS,
@@ -14,6 +15,10 @@ from falcon_crossorigin import (
 )
 
 from . import base
+
+JOINER = ", "
+if falcon.__version__.startswith("1"):
+    JOINER = ","
 
 
 class TestCrossOrigin(base.TestBase):
@@ -76,7 +81,7 @@ class TestCrossOrigin(base.TestBase):
             HEADER_ACCESS_CONTROL_REQUEST_METHOD,
             HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
         ]
-        self.assertEqual(", ".join(res_headers), self.res_headers[HEADER_VARY])
+        self.assertEqual(JOINER.join(res_headers), self.res_headers[HEADER_VARY])
 
     def test_preflight_allow_origins(self):
         self.override_settings(allow_origins="localhost")
@@ -156,7 +161,7 @@ class TestCrossOrigin(base.TestBase):
             HEADER_ACCESS_CONTROL_REQUEST_METHOD,
             HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
         ]
-        self.assertEqual(", ".join(vary), self.res_headers[HEADER_VARY])
+        self.assertEqual(JOINER.join(vary), self.res_headers[HEADER_VARY])
 
     def test_preflight_wildcard_origin(self):
         self.override_settings(
