@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="falcon-crossorigin",
-    version="0.1.1",
+    version="0.1.2",
     description="Falcon cross-origin middleware",
     url="http://github.com/admiralobviou/falcon-crossorigin",
     author="Alexandre Ferland",
