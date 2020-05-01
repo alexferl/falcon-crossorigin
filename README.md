@@ -20,7 +20,6 @@ cross_origin = CrossOrigin(
     allow_credentials=True,
     expose_headers="Link",
     max_age=3600,
-
 )
 
 api = falcon.API(middleware=[cross_origin])
