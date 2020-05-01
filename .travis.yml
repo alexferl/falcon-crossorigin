@@ -13,10 +13,11 @@ before_install:
   - python --version
   - pip install -U pip
   - pip install -U pytest
+  - pip install -U pytest-cov
   - pip install codecov
 install:
   - pip install falcon==$FALCON
   - pip install ".[test]" .
-script: pytest
+script: pytest --cov=./falcon_crossorigin
 after_success:
   - codecov
