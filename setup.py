@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="falcon-crossorigin",
-    version="0.1.0",
+    version="0.1.1",
     description="Falcon cross-origin middleware",
     url="http://github.com/admiralobviou/falcon-crossorigin",
     author="Alexandre Ferland",
@@ -10,7 +10,7 @@ setup(
     license="MIT",
     packages=["falcon_crossorigin"],
     zip_safe=False,
-    install_requires=["falcon>=2.0.0"],
+    install_requires=["falcon>=1.4.1"],
     setup_requires=["pytest-runner>=5.2"],
     tests_require=["pytest>=5.4.1"],
     platforms="any",
