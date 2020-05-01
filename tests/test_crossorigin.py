@@ -1,10 +1,16 @@
 from falcon_crossorigin import (
     CrossOrigin,
+    DEFAULT_METHODS,
     HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
     HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
+    HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
     HEADER_ACCESS_CONTROL_ALLOW_METHODS,
+    HEADER_ACCESS_CONTROL_EXPOSE_HEADERS,
     HEADER_ACCESS_CONTROL_MAX_AGE,
+    HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+    HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
     HEADER_ORIGIN,
+    HEADER_VARY,
 )
 
 from . import base
@@ -21,70 +27,163 @@ class TestCrossOrigin(base.TestBase):
     def override_settings(self, **kwargs):
         self.setUp(CrossOrigin(**kwargs))
 
-    def test_wildcard_origin(self):
+    def test_request_defaults(self):
         self.simulate_get(self.entry_path)
+
         self.assertEqual("*", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN])
+        self.assertEqual(HEADER_ORIGIN, self.res_headers[HEADER_VARY])
 
-    def test_allow_origin(self):
-        self.override_settings(allow_origins="localhost")
+    def test_request_expose_headers(self):
+        self.override_settings(expose_headers="Link")
 
-        headers = {HEADER_ORIGIN: "localhost"}
-        self.simulate_get(self.entry_path, headers=headers)
-        self.assertEqual(
-            "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
-        )
+        self.simulate_get(self.entry_path)
 
-    def test_preflight(self):
+        self.assertEqual("Link", self.res_headers[HEADER_ACCESS_CONTROL_EXPOSE_HEADERS])
+
+    def test_request_custom_settings(self):
+        methods = "GET,POST"
+        headers = "Pragma,Expires,Cache-Control"
+        expose = "Link"
         self.override_settings(
-            allow_origins="localhost", allow_credentials=True, max_age=3600
+            allow_origins="localhost",
+            allow_methods=methods,
+            allow_headers=headers,
+            allow_credentials=True,
+            expose_headers=expose,
+            max_age=3600,
         )
 
-        headers = {HEADER_ORIGIN: "localhost", "Content-Type": "application/json"}
-        self.simulate_options(self.entry_path, headers=headers)
+        self.simulate_get(self.entry_path, headers={HEADER_ORIGIN: "localhost"})
 
-        self.assertEqual(
-            "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
-        )
         self.assertEqual(
             "true", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]
         )
-        self.assertNotEqual("", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_METHODS])
+        self.assertEqual(
+            "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
+        )
+        self.assertEqual(expose, self.res_headers[HEADER_ACCESS_CONTROL_EXPOSE_HEADERS])
+        self.assertEqual(HEADER_ORIGIN, self.res_headers[HEADER_VARY])
+
+    def test_preflight_defaults(self):
+        self.simulate_options(self.entry_path)
+
+        self.assertEqual("*", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN])
+        self.assertEqual(
+            DEFAULT_METHODS, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_METHODS]
+        )
+        res_headers = [
+            HEADER_ORIGIN,
+            HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+            HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+        ]
+        self.assertEqual(", ".join(res_headers), self.res_headers[HEADER_VARY])
+
+    def test_preflight_allow_origins(self):
+        self.override_settings(allow_origins="localhost")
+
+        self.simulate_get(self.entry_path, headers={HEADER_ORIGIN: "localhost"})
+        self.assertEqual(
+            "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
+        )
+
+    def test_preflight_allow_methods(self):
+        methods = "GET,POST"
+        self.override_settings(allow_methods=methods)
+
+        self.simulate_options(self.entry_path)
+
+        self.assertEqual(methods, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_METHODS])
+
+    def test_preflight_allow_credentials(self):
+        self.override_settings(allow_credentials=True)
+
+        self.simulate_options(self.entry_path)
+
+        self.assertEqual(
+            "true", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]
+        )
+
+    def test_preflight_allow_headers(self):
+        headers = "Pragma,Expires,Cache-Control"
+        self.override_settings(allow_headers=headers)
+
+        self.simulate_options(self.entry_path)
+
+        self.assertEqual(headers, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_HEADERS])
+
+    def test_preflight_request_headers(self):
+        headers = "Pragma,Expires,Cache-Control"
+
+        self.simulate_options(
+            self.entry_path, headers={HEADER_ACCESS_CONTROL_REQUEST_HEADERS: headers}
+        )
+
+        self.assertEqual(headers, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_HEADERS])
+
+    def test_preflight_max_age(self):
+        self.override_settings(max_age=3600)
+
+        self.simulate_options(self.entry_path)
+
         self.assertEqual("3600", self.res_headers[HEADER_ACCESS_CONTROL_MAX_AGE])
+
+    def test_preflight_custom_settings(self):
+        methods = "GET,POST"
+        headers = "Pragma,Expires,Cache-Control"
+        expose = "Link"
+        self.override_settings(
+            allow_origins="localhost",
+            allow_methods=methods,
+            allow_headers=headers,
+            allow_credentials=True,
+            expose_headers=expose,
+            max_age=3600,
+        )
+
+        self.simulate_options(self.entry_path, headers={HEADER_ORIGIN: "localhost"})
+
+        self.assertEqual(
+            "true", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]
+        )
+        self.assertEqual(methods, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_METHODS])
+        self.assertEqual(
+            "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
+        )
+        self.assertEqual("3600", self.res_headers[HEADER_ACCESS_CONTROL_MAX_AGE])
+        self.assertEqual(headers, self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_HEADERS])
+        vary = [
+            HEADER_ORIGIN,
+            HEADER_ACCESS_CONTROL_REQUEST_METHOD,
+            HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
+        ]
+        self.assertEqual(", ".join(vary), self.res_headers[HEADER_VARY])
 
     def test_preflight_wildcard_origin(self):
         self.override_settings(
-            allow_origins="localhost", allow_credentials=True, max_age=3600
+            allow_origins="*", allow_credentials=True,
         )
 
-        headers = {HEADER_ORIGIN: "localhost", "Content-Type": "application/json"}
-        self.simulate_options(self.entry_path, headers=headers)
+        self.simulate_options(self.entry_path, headers={HEADER_ORIGIN: "localhost"})
 
         self.assertEqual(
             "localhost", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN]
         )
-        self.assertEqual(
-            "true", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS]
-        )
-        self.assertNotEqual("", self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_METHODS])
-        self.assertEqual("3600", self.res_headers[HEADER_ACCESS_CONTROL_MAX_AGE])
 
     def test_preflight_wildcard_origin_sub_domain(self):
         self.override_settings(allow_origins="https://*.example.com")
 
-        headers = {
-            HEADER_ORIGIN: "https://aaa.example.com",
-        }
-        self.simulate_options(self.entry_path, headers=headers)
+        self.simulate_options(
+            self.entry_path, headers={HEADER_ORIGIN: "https://aaa.example.com",}
+        )
 
         self.assertEqual(
             "https://aaa.example.com",
             self.res_headers[HEADER_ACCESS_CONTROL_ALLOW_ORIGIN],
         )
 
-        headers = {
-            HEADER_ORIGIN: "https://bbb.example.com",
-        }
-        self.simulate_options(self.entry_path, headers=headers)
+        self.simulate_options(
+            self.entry_path, headers={HEADER_ORIGIN: "https://bbb.example.com",}
+        )
 
         self.assertEqual(
             "https://bbb.example.com",

@@ -13,29 +13,21 @@ from .header import (
     HEADER_VARY,
 )
 from .method import (
-    METHOD_DELETE,
-    METHOD_GET,
-    METHOD_HEAD,
+    DEFAULT_METHODS,
     METHOD_OPTIONS,
-    METHOD_PATCH,
-    METHOD_POST,
 )
 from .util import _match_sub_domain
-
-DEFAULT_METHODS = ",".join(
-    [METHOD_GET, METHOD_HEAD, METHOD_PATCH, METHOD_POST, METHOD_DELETE]
-)
 
 
 class CrossOrigin:
     def __init__(
         self,
-        allow_origins="*",
-        allow_methods=DEFAULT_METHODS,
-        allow_headers="",
-        allow_credentials=False,
-        expose_headers="",
-        max_age=0,
+        allow_origins: str = "*",
+        allow_methods: str = DEFAULT_METHODS,
+        allow_headers: str = "",
+        allow_credentials: bool = False,
+        expose_headers: str = "",
+        max_age: bool = 0,
     ):
         self.allow_origins = allow_origins
         self.allow_methods = allow_methods
@@ -44,7 +36,9 @@ class CrossOrigin:
         self.expose_headers = expose_headers
         self.max_age = max_age
 
-    def process_response(self, req, resp, resource, req_succeeded):
+    def process_response(
+        self, req, resp, resource, req_succeeded,
+    ):
         origin = req.get_header(HEADER_ORIGIN, default="")
         allow_origin = ""
 
