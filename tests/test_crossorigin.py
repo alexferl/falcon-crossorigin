@@ -17,7 +17,7 @@ from falcon_crossorigin import (
 from . import base
 
 JOINER = ", "
-if falcon.__version__.startswith("1"):
+if falcon.__version__[0] == "1":
     JOINER = ","
 
 
