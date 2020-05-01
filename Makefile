@@ -1,4 +1,4 @@
-.PHONY: help build clean update test fmt
+.PHONY: help build clean update test lint
 
 VENV_NAME?=venv
 VENV_ACTIVATE=. $(VENV_NAME)/bin/activate
