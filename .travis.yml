@@ -6,5 +6,10 @@ python:
   - "3.7"
   - "3.8"
 cache: pip
-install: pip install -r dev_requirements.txt
+env:
+  - FALCON=1.4.1
+  - FALCON=2.0.0
+install:
+  - pip install falcon==$FALCON
+  - pip install -r dev_requirements.txt
 script: python setup.py test
