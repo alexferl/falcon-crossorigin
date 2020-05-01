@@ -9,7 +9,14 @@ cache: pip
 env:
   - FALCON=1.4.1
   - FALCON=2.0.0
+before_install:
+  - python --version
+  - pip install -U pip
+  - pip install -U pytest
+  - pip install codecov
 install:
   - pip install falcon==$FALCON
-  - pip install -r dev_requirements.txt
-script: python setup.py test
+  - pip install ".[test]" .
+script: pytest
+after_success:
+  - codecov
