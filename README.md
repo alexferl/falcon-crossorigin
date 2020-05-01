@@ -24,3 +24,6 @@ cross_origin = CrossOrigin(
 
 api = falcon.API(middleware=[cross_origin])
 ```
+
+## Credits
+Port of [Echo's](https://github.com/labstack/echo) [CORS middleware](https://github.com/labstack/echo/blob/1f6cc362cc91b22e5889b2674e45cf3545d6ee21/middleware/cors.go).
