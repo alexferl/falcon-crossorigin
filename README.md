@@ -13,7 +13,15 @@ pip install falcon-crossorigin
 import falcon
 from falcon_crossorigin import CrossOrigin
 
-cross_origin = CrossOrigin(allow_origins="https://app.example.com")
+cross_origin = CrossOrigin(
+    allow_origins="https://app.example.com",
+    allow_methods="GET,POST",
+    allow_headers="Pragma,Expires,Cache-Control",
+    allow_credentials=True,
+    expose_headers="Link",
+    max_age=3600,
+
+)
 
 api = falcon.API(middleware=[cross_origin])
 ```
