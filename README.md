@@ -1,4 +1,4 @@
-# falcon-crossorigin [![Build Status](https://travis-ci.org/admiralobvious/falcon-crossorigin.svg?branch=master)](https://travis-ci.org/admiralobvious/falcon-crossorigin) [![codecov](https://codecov.io/gh/admiralobvious/falcon-crossorigin/branch/master/graph/badge.svg)](https://codecov.io/gh/admiralobvious/falcon-crossorigin)
+# falcon-crossorigin [![Build Status](https://travis-ci.com/admiralobvious/falcon-crossorigin.svg?branch=master)](https://travis-ci.com/admiralobvious/falcon-crossorigin) [![codecov](https://codecov.io/gh/admiralobvious/falcon-crossorigin/branch/master/graph/badge.svg)](https://codecov.io/gh/admiralobvious/falcon-crossorigin)
 
 A simple [Falcon](https://github.com/falconry/falcon) module for Cross-Origin Resource Sharing (CORS).
 
