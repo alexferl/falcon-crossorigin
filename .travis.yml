@@ -1,6 +1,6 @@
 language: python
 sudo: required
-dist: bionic
+dist: focal
 python:
   - "3.7"
   - "3.8"
@@ -9,6 +9,7 @@ cache: pip
 env:
   - FALCON=1.4.1
   - FALCON=2.0.0
+  - FALCON=3.0.1
 before_install:
   - python --version
   - pip install -U pip
