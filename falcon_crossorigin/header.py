@@ -1,3 +1,4 @@
+HEADER_ACCEPT = "Accept"
 HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS = "Access-Control-Allow-Credentials"
 HEADER_ACCESS_CONTROL_ALLOW_HEADERS = "Access-Control-Allow-Headers"
 HEADER_ACCESS_CONTROL_ALLOW_METHODS = "Access-Control-Allow-Methods"

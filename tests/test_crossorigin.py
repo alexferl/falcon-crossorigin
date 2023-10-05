@@ -1,7 +1,12 @@
+from importlib.metadata import version
+
+falcon_major_version = int(version("falcon")[0])
+
 import falcon
 from falcon_crossorigin import (
     CrossOrigin,
     DEFAULT_METHODS,
+    HEADER_ACCEPT,
     HEADER_ACCESS_CONTROL_ALLOW_ORIGIN,
     HEADER_ACCESS_CONTROL_ALLOW_CREDENTIALS,
     HEADER_ACCESS_CONTROL_ALLOW_HEADERS,
@@ -81,6 +86,8 @@ class TestCrossOrigin(base.TestBase):
             HEADER_ACCESS_CONTROL_REQUEST_METHOD,
             HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
         ]
+        if falcon_major_version > 2:
+            res_headers.insert(0, HEADER_ACCEPT)
         self.assertEqual(JOINER.join(res_headers), self.res_headers[HEADER_VARY])
 
     def test_preflight_allow_origins(self):
@@ -161,11 +168,14 @@ class TestCrossOrigin(base.TestBase):
             HEADER_ACCESS_CONTROL_REQUEST_METHOD,
             HEADER_ACCESS_CONTROL_REQUEST_HEADERS,
         ]
+        if falcon_major_version > 2:
+            vary.insert(0, HEADER_ACCEPT)
         self.assertEqual(JOINER.join(vary), self.res_headers[HEADER_VARY])
 
     def test_preflight_wildcard_origin(self):
         self.override_settings(
-            allow_origins="*", allow_credentials=True,
+            allow_origins="*",
+            allow_credentials=True,
         )
 
         self.simulate_options(self.entry_path, headers={HEADER_ORIGIN: "localhost"})
@@ -178,7 +188,10 @@ class TestCrossOrigin(base.TestBase):
         self.override_settings(allow_origins="https://*.example.com")
 
         self.simulate_options(
-            self.entry_path, headers={HEADER_ORIGIN: "https://aaa.example.com",}
+            self.entry_path,
+            headers={
+                HEADER_ORIGIN: "https://aaa.example.com",
+            },
         )
 
         self.assertEqual(
@@ -187,7 +200,10 @@ class TestCrossOrigin(base.TestBase):
         )
 
         self.simulate_options(
-            self.entry_path, headers={HEADER_ORIGIN: "https://bbb.example.com",}
+            self.entry_path,
+            headers={
+                HEADER_ORIGIN: "https://bbb.example.com",
+            },
         )
 
         self.assertEqual(
