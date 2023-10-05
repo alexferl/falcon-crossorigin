@@ -37,7 +37,11 @@ class CrossOrigin:
         self.max_age = max_age
 
     def process_response(
-        self, req, resp, resource, req_succeeded,
+        self,
+        req,
+        resp,
+        resource,
+        req_succeeded,
     ):
         origin = req.get_header(HEADER_ORIGIN, default="")
         allow_origin = ""
