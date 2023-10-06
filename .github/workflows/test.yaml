@@ -60,5 +60,5 @@ jobs:
       - run: pip install pytest-cov codecov
       - run: pip install -r requirements-dev.txt .
       - run: pip install .
-      - run: pytest --cov=./falcon-crossorigin
+      - run: pytest --cov=./falcon_crossorigin
       - run: codecov
