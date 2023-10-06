@@ -57,6 +57,8 @@ jobs:
       - run: pip install FALCON==$FALCON
         env:
           FALCON: '${{ matrix.FALCON }}'
+      - run: pip install pytest-cov codecov
       - run: pip install -r requirements-dev.txt .
       - run: pip install .
-      - run: pytest
+      - run: pytest --cov=./vyper
+      - run: codecov
